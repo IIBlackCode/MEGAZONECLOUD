@@ -1,0 +1,78 @@
+spring:
+  datasource:
+    names: ds0, ds1
+    ds0:
+      type: com.zaxxer.hikari.HikariDataSource
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://kms-shardingsphere-0.mysql.database.azure.com:3306/test
+      username: master
+      password: megazone!234
+    ds1:
+      type: com.zaxxer.hikari.HikariDataSource
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://kms-shardingsphere-1.mysql.database.azure.com:3306/test
+      username: master
+      password: megazone!234
+      
+  shardingsphere:
+    datasource:
+      names: ds0, ds1
+      ds0:
+        name: ds0
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://kms-shardingsphere-0.mysql.database.azure.com:3306/test
+        username: master
+        password: megazone!234
+      ds1:
+        name: ds1
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://kms-shardingsphere-1.mysql.database.azure.com:3306/test
+        username: master
+        password: megazone!234
+    
+    sharding:
+      tables:
+        data:
+          actual-data-nodes: ds0.data$->{0..1}, ds1.data$->{0..1}
+          table-strategy:
+            standard:
+              sharding-column: num
+              sharding-algorithm-name: data-table-algorithm
+          key-generator:
+            column: num
+            type: SNOWFLAKE
+      binding-tables: data
+      default-database-strategy:
+        standard:
+          sharding-column: num
+          sharding-algorithm-name: data-database-algorithm
+    props:
+      max-active: 20
+      validation-query: SELECT 1
+      
+      
+  mvc:
+    view:
+      prefix: /WEB-INF/views/   # Controller가 리턴시 앞에붙는 경로 명
+      suffix: .jsp              # Controller가 리턴시 뒤에붙는 경로 명
+  
+  # 화면 자동반영 관련 설정
+  devtools:
+    livereload:
+      enabled: true
+      
+# Mybatis 설정
+mybatis:
+  # default Package location - resultType의 Alias를 지정합니다.
+  type-aliases-package: com.megazone.www.VO
+  # mapper location - 바라 볼 xml 파일을 지정합니다.
+  mapper-locations: classpath:mapper/*.xml
+  # column name to camel case - 반환 받는 컬럼명을 CamelCase로 받는 설정을 합니다.
+  configuration:
+    map-underscore-to-camel-case: true
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
