@@ -1,10 +1,15 @@
 package com.megazone.www.Service;
 
+import java.sql.Connection;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.sql.DataSource;
+import javax.sql.PooledConnection;
+
 import org.apache.ibatis.session.SqlSession;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +31,13 @@ public class DataServiceImp implements DataService {
     private final SqlSession sqlSession;
     private ScheduledExecutorService executorService;
     private AutoCRUD_thread insert;
+//    private final DataSource dataSource;
+    private final ShardingSphereDataSource shardingSphereDataSource;
     
     @Autowired
-    public DataServiceImp( SqlSession sqlSession) {
+    public DataServiceImp( SqlSession sqlSession, ShardingSphereDataSource shardingSphereDataSource) {
         this.sqlSession = sqlSession;
+        this.shardingSphereDataSource = shardingSphereDataSource;
         // Initialize the executorService when the thread is created
         this.executorService = Executors.newSingleThreadScheduledExecutor();
     }
@@ -68,6 +76,10 @@ public class DataServiceImp implements DataService {
     public void insertData() {
     	insert = new AutoCRUD_thread("WRITE", sqlSession);
         logger.info("master ...ing");
+        
+        System.out.println("Connected to DataSource: " + shardingSphereDataSource);
+        logger.info("SqlSession info: {}", sqlSession);
+        logger.info("DataSource info: {}", shardingSphereDataSource);
         insert.start(); // Thread 시작
     }
 }

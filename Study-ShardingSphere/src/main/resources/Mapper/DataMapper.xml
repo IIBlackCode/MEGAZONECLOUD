@@ -5,6 +5,8 @@
     [템플릿 설명]  
     - 해당 파일은 SQL 문을 작성하는 곳입니다.
 -->
+
+<!-- 다음과 같이 네임스페이스 선언을 추가하세요 -->
 <mapper namespace="com.megazone.www.Mapper.DataMapper">
 
 	<select id="selectDataList" resultType="com.megazone.www.VO.DataVO">
